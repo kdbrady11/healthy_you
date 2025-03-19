@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ action }} Goal</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+  <h2>{{ action }} Goal</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">{{ action }}</button>
+  </form>
+  <p><a href="{% url 'goal_dashboard' %}">Back to Goals Dashboard</a></p>
+</div>
+</body>
+</html>

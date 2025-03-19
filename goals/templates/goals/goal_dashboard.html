@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Goal Dashboard</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+  <h2>Your Goals</h2>
+  <a href="{% url 'goal_create' %}" class="btn btn-primary mb-3">Create New Goal</a>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Goal Type</th>
+        <th>Description</th>
+        <th>Target Value</th>
+        <th>Current Value</th>
+        <th>Progress (%)</th>
+        <th>Feedback</th>
+        <th>Due Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in goal_data %}
+      <tr>
+        <td>{{ item.goal.get_goal_type_display }}</td>
+        <td>{{ item.goal.description }}</td>
+        <td>{{ item.goal.target_value }}</td>
+        <td>
+          {% if item.current_value %}
+            {{ item.current_value }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>
+          {% if item.progress is not None %}
+            {{ item.progress }}%
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>{{ item.feedback }}</td>
+        <td>{{ item.goal.due_date }}</td>
+        <td>
+          <a href="{% url 'goal_edit' item.goal.id %}" class="btn btn-sm btn-secondary">Edit</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8">No goals set yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p><a href="{% url 'dashboard' %}">Return to Main Dashboard</a></p>
+</div>
+</body>
+</html>
