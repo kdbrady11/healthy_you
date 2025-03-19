@@ -1,0 +1,41 @@
+<h3>Edit Entries</h3>
+<form method="get" class="form-inline mb-3">
+  <input type="hidden" name="active_tab" value="edit">
+  <label for="start_date" class="mr-2">Start Date:</label>
+  <input type="date" id="start_date" name="start_date" class="form-control mr-2" value="{{ request.GET.start_date }}">
+  <label for="end_date" class="mr-2">End Date:</label>
+  <input type="date" id="end_date" name="end_date" class="form-control mr-2" value="{{ request.GET.end_date }}">
+  <button type="submit" class="btn btn-primary mr-2">Filter</button>
+  <a href="{% url 'health_dashboard' %}?active_tab=edit" class="btn btn-secondary">Reset Filter</a>
+</form>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Weight (lbs)</th>
+      <th>BP Systolic</th>
+      <th>BP Diastolic</th>
+      <th>HR</th>
+      <th>Calories</th>
+      <th>Activity (min)</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in entries %}
+    <tr>
+      <td>{{ entry.date }}</td>
+      <td>{{ entry.weight_lbs }}</td>
+      <td>{{ entry.blood_pressure_systolic }}</td>
+      <td>{{ entry.blood_pressure_diastolic }}</td>
+      <td>{{ entry.heart_rate }}</td>
+      <td>{{ entry.calories_intake }}</td>
+      <td>{{ entry.physical_activity_minutes }}</td>
+      <td>
+        <a class="btn btn-sm btn-secondary" href="{% url 'health_edit_entry' entry.date|date:'Y-m-d' %}">Edit</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+

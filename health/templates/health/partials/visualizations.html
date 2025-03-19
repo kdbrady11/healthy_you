@@ -1,0 +1,269 @@
+<h3>Visualizations</h3>
+<ul class="nav nav-tabs" id="vizSubTabs" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="tab" href="#viz-weight" role="tab">Weight</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#viz-map" role="tab">MAP</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#viz-hr" role="tab">Heart Rate</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#viz-calories" role="tab">Calories</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#viz-activity" role="tab">Activity</a>
+  </li>
+</ul>
+<div class="tab-content mt-3" id="vizSubTabsContent">
+  <!-- Weight Visualization -->
+  <div class="tab-pane fade show active" id="viz-weight" role="tabpanel">
+    <h4>Weight Over Time (lbs)</h4>
+    <canvas id="weightChart" width="400" height="300"></canvas>
+    <p><strong>Explanation:</strong> The line represents the daily average weight (in lbs) while the scatter points show every individual entry. This helps you track long-term weight trends.</p>
+  </div>
+  <!-- MAP Visualization -->
+  <div class="tab-pane fade" id="viz-map" role="tabpanel">
+    <h4>MAP (mmHg) Over Time</h4>
+    <canvas id="mapChart" width="400" height="300"></canvas>
+    <p><strong>Explanation:</strong> The chart shows your daily average MAP along with overall and national averages. MAP is critical for ensuring proper blood flow to organs.</p>
+  </div>
+  <!-- Heart Rate Visualization -->
+  <div class="tab-pane fade" id="viz-hr" role="tabpanel">
+    <h4>Heart Rate Over Time (bpm)</h4>
+    <canvas id="hrChart" width="400" height="300"></canvas>
+    <p><strong>Explanation:</strong> The line shows your daily average heart rate with overall and national benchmarks, while scatter points plot individual readings.</p>
+  </div>
+  <!-- Calories Visualization -->
+  <div class="tab-pane fade" id="viz-calories" role="tabpanel">
+    <h4>Calories Intake Over Time</h4>
+    <canvas id="caloriesChart" width="400" height="300"></canvas>
+    <p><strong>Explanation:</strong> This chart displays the total calories consumed per day along with a dashed line representing your overall daily average calories intake.</p>
+  </div>
+  <!-- Activity Visualization -->
+  <div class="tab-pane fade" id="viz-activity" role="tabpanel">
+    <h4>Physical Activity Over Time (minutes)</h4>
+    <canvas id="activityChart" width="400" height="300"></canvas>
+    <p><strong>Explanation:</strong> The chart shows the total minutes of physical activity per day, with a dashed line indicating your overall average activity.</p>
+  </div>
+</div>
+<script>
+  // Aggregated data for charts.
+  var dates = {{ agg_dates|safe }};
+  var aggWeight = {{ agg_weight_lbs|safe }};
+  var aggMap = {{ agg_map|safe }};
+  var aggHr = {{ agg_hr|safe }};
+  var aggCalories = {{ agg_calories|safe }};
+  var aggActivity = {{ agg_activity|safe }};
+
+  // Overall averages for dashed lines.
+  var overallWeight = {{ overall_weight }};
+  var overallCalories = {{ overall_calories }};
+  var overallActivity = {{ overall_activity }};
+  var overallMap = {{ overall_map }};
+  var overallHr = {{ overall_hr }};
+  var nationalAvgHr = {{ national_avg_hr }};
+  var nationalAvgMap = {{ national_avg_map }};
+
+  var overallWeightLine = dates.map(() => overallWeight);
+  var overallCaloriesLine = dates.map(() => overallCalories);
+  var overallActivityLine = dates.map(() => overallActivity);
+  var overallMapLine = dates.map(() => overallMap);
+  var nationalMapLine = dates.map(() => nationalAvgMap);
+  var overallHrLine = dates.map(() => overallHr);
+  var nationalHrLine = dates.map(() => nationalAvgHr);
+
+  // Scatter data for individual entries.
+  var individualWeight = {{ individual_weight|safe }};
+  var individualMap = {{ individual_map|safe }};
+  var individualHr = {{ individual_hr|safe }};
+
+  // Weight Chart
+  var ctxWeight = document.getElementById('weightChart').getContext('2d');
+  new Chart(ctxWeight, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: 'Daily Average Weight (lbs)',
+          data: aggWeight,
+          borderColor: 'rgb(54, 162, 235)',
+          fill: false
+        },
+        {
+          label: 'Overall Weight Average',
+          data: overallWeightLine,
+          borderColor: 'rgb(0,0,0)',
+          borderDash: [10,5],
+          fill: false
+        },
+        {
+          label: 'Individual Entries',
+          data: individualWeight,
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          type: 'scatter',
+          showLine: false,
+          pointRadius: 4
+        }
+      ]
+    },
+    options: {
+      scales: {
+        x: { display: true, title: { display: true, text: 'Date' } },
+        y: { display: true, title: { display: true, text: 'Weight (lbs)' } }
+      }
+    }
+  });
+
+  // MAP Chart
+  var ctxMap = document.getElementById('mapChart').getContext('2d');
+  new Chart(ctxMap, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: 'Daily Average MAP (mmHg)',
+          data: aggMap,
+          borderColor: 'rgb(75, 192, 192)',
+          fill: false
+        },
+        {
+          label: 'Overall MAP Average',
+          data: overallMapLine,
+          borderColor: 'rgb(0, 0, 0)',
+          borderDash: [10,5],
+          fill: false
+        },
+        {
+          label: 'National MAP Average',
+          data: nationalMapLine,
+          borderColor: 'rgb(255, 0, 0)',
+          borderDash: [10,5],
+          fill: false
+        },
+        {
+          label: 'Individual Entries',
+          data: individualMap,
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          type: 'scatter',
+          showLine: false,
+          pointRadius: 4
+        }
+      ]
+    },
+    options: {
+      scales: {
+        x: { display: true, title: { display: true, text: 'Date' } },
+        y: { display: true, title: { display: true, text: 'MAP (mmHg)' } }
+      }
+    }
+  });
+
+  // Heart Rate Chart
+  var ctxHr = document.getElementById('hrChart').getContext('2d');
+  new Chart(ctxHr, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: 'Daily Average HR (bpm)',
+          data: aggHr,
+          borderColor: 'rgb(255, 99, 132)',
+          fill: false
+        },
+        {
+          label: 'Overall HR Average',
+          data: overallHrLine,
+          borderColor: 'rgb(0, 0, 0)',
+          borderDash: [10,5],
+          fill: false
+        },
+        {
+          label: 'National HR Average',
+          data: nationalHrLine,
+          borderColor: 'rgb(0, 123, 255)',
+          borderDash: [10,5],
+          fill: false
+        },
+        {
+          label: 'Individual Entries',
+          data: individualHr,
+          backgroundColor: 'rgba(255, 99, 132, 0.6)',
+          type: 'scatter',
+          showLine: false,
+          pointRadius: 4
+        }
+      ]
+    },
+    options: {
+      scales: {
+        x: { display: true, title: { display: true, text: 'Date' } },
+        y: { display: true, title: { display: true, text: 'HR (bpm)' } }
+      }
+    }
+  });
+
+  // Calories Chart
+  var ctxCal = document.getElementById('caloriesChart').getContext('2d');
+  new Chart(ctxCal, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: 'Daily Total Calories',
+          data: aggCalories,
+          borderColor: 'rgb(75, 192, 192)',
+          fill: false
+        },
+        {
+          label: 'Overall Calories Average',
+          data: overallCaloriesLine,
+          borderColor: 'rgb(0,0,0)',
+          borderDash: [10,5],
+          fill: false
+        }
+      ]
+    },
+    options: {
+      scales: {
+        x: { display: true, title: { display: true, text: 'Date' } },
+        y: { display: true, title: { display: true, text: 'Calories' } }
+      }
+    }
+  });
+
+  // Activity Chart
+  var ctxAct = document.getElementById('activityChart').getContext('2d');
+  new Chart(ctxAct, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: 'Daily Total Activity (min)',
+          data: aggActivity,
+          borderColor: 'rgb(255, 159, 64)',
+          fill: false
+        },
+        {
+          label: 'Overall Activity Average',
+          data: overallActivityLine,
+          borderColor: 'rgb(0,0,0)',
+          borderDash: [10,5],
+          fill: false
+        }
+      ]
+    },
+    options: {
+      scales: {
+        x: { display: true, title: { display: true, text: 'Date' } },
+        y: { display: true, title: { display: true, text: 'Minutes' } }
+      }
+    }
+  });
+</script>

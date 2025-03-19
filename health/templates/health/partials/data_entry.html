@@ -1,0 +1,39 @@
+<h3>Enter Health Metrics</h3>
+<form method="post">
+  {% csrf_token %}
+  <!-- Weight Field with Dynamic Unit Label -->
+  <div class="form-group">
+    <label for="id_weight">
+      Weight (<span id="weightUnitLabel">kg</span>)
+    </label>
+    {{ form.weight }}
+  </div>
+  <!-- Weight Unit Field -->
+  <div class="form-group">
+    <label for="id_weight_unit">Weight Unit</label>
+    {{ form.weight_unit }}
+  </div>
+
+  <!-- Render remaining fields -->
+  {% for field in form %}
+    {% if field.name not in "weight weight_unit" %}
+      <div class="form-group">
+        {{ field.label_tag }} {{ field }}
+      </div>
+    {% endif %}
+  {% endfor %}
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<!-- Include jQuery (if not already included) and update the unit label -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function(){
+    // Update the weight unit label when the weight_unit field changes.
+    $('#id_weight_unit').change(function(){
+       var selected = $(this).val();
+       $('#weightUnitLabel').text(selected);
+    });
+  });
+</script>

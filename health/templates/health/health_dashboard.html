@@ -4,292 +4,60 @@
   <title>Health Dashboard</title>
   <!-- Include Bootstrap CSS, jQuery, Bootstrap JS, and Chart.js -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <!-- Use full version of jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="container mt-4">
-    <h2>Health Dashboard</h2>
-    <!-- Main Navigation Tabs -->
-    <ul class="nav nav-tabs" id="healthTab" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" id="data-entry-tab" data-toggle="tab" href="#data-entry" role="tab">Data Entry</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="visualization-tab" data-toggle="tab" href="#visualization" role="tab">Visualizations</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="feedback-tab" data-toggle="tab" href="#feedback" role="tab">Feedback</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab">Edit Entries</a>
-      </li>
-    </ul>
-    <div class="tab-content mt-3" id="healthTabContent">
-      <!-- Data Entry Tab -->
-      <div class="tab-pane fade show active" id="data-entry" role="tabpanel">
-        <h3>Enter Health Metrics</h3>
-        <form method="post">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-      </div>
-      <!-- Visualizations Tab with Sub-tabs -->
-      <div class="tab-pane fade" id="visualization" role="tabpanel">
-        <h3>Visualizations</h3>
-        <!-- Sub-tabs for each visualization -->
-        <ul class="nav nav-tabs" id="vizSubTabs" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#viz-weight" role="tab">Weight</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#viz-map" role="tab">MAP</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#viz-hr" role="tab">Heart Rate</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#viz-calories" role="tab">Calories</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#viz-activity" role="tab">Activity</a>
-          </li>
-        </ul>
-        <div class="tab-content mt-3" id="vizSubTabsContent">
-          <!-- Weight Visualization -->
-          <div class="tab-pane fade show active" id="viz-weight" role="tabpanel">
-            <h4>Weight Over Time</h4>
-            <canvas id="weightChart" width="400" height="300"></canvas>
-            <p><strong>Explanation:</strong> Average weight per day is used to track overall trends. Regular monitoring helps you adjust your diet and exercise routine.</p>
-          </div>
-          <!-- MAP Visualization -->
-          <div class="tab-pane fade" id="viz-map" role="tabpanel">
-            <h4>MAP (Mean Arterial Pressure) Over Time</h4>
-            <canvas id="mapChart" width="400" height="300"></canvas>
-            <p><strong>Explanation:</strong> MAP is an important indicator of blood flow and organ perfusion. The chart shows your daily average MAP, along with overall and national averages.</p>
-          </div>
-          <!-- Heart Rate Visualization -->
-          <div class="tab-pane fade" id="viz-hr" role="tabpanel">
-            <h4>Heart Rate Over Time</h4>
-            <canvas id="hrChart" width="400" height="300"></canvas>
-            <p><strong>Explanation:</strong> Monitoring heart rate helps assess cardiovascular fitness. The chart shows your daily average heart rate compared to overall and national averages.</p>
-          </div>
-          <!-- Calories Visualization -->
-          <div class="tab-pane fade" id="viz-calories" role="tabpanel">
-            <h4>Calories Intake Over Time</h4>
-            <canvas id="caloriesChart" width="400" height="300"></canvas>
-            <p><strong>Explanation:</strong> The chart displays the total calories consumed per day. This helps in managing energy balance and weight control.</p>
-          </div>
-          <!-- Activity Visualization -->
-          <div class="tab-pane fade" id="viz-activity" role="tabpanel">
-            <h4>Physical Activity Over Time</h4>
-            <canvas id="activityChart" width="400" height="300"></canvas>
-            <p><strong>Explanation:</strong> Tracking daily physical activity helps you monitor exercise levels. Consistent activity is key to overall health and fitness.</p>
-          </div>
-        </div>
-        <!-- Visualization Scripts -->
-        <script>
-          var dates = {{ agg_dates|safe }};
-          var weightValues = {{ agg_weight|safe }};
-          var mapValues = {{ agg_map|safe }};
-          var hrValues = {{ agg_hr|safe }};
-          var calories = {{ agg_calories|safe }};
-          var activity = {{ agg_activity|safe }};
-          var overallMap = {{ overall_map }};
-          var overallHr = {{ overall_hr }};
-          var nationalAvgHr = {{ national_avg_hr }};
-          var nationalAvgMap = {{ national_avg_map }};
-
-          // Compute dashed line arrays.
-          var overallMapLine = dates.map(() => overallMap);
-          var nationalMapLine = dates.map(() => nationalAvgMap);
-          var overallHrLine = dates.map(() => overallHr);
-          var nationalHrLine = dates.map(() => nationalAvgHr);
-
-          // Weight Chart
-          var ctxWeight = document.getElementById('weightChart').getContext('2d');
-          new Chart(ctxWeight, {
-              type: 'line',
-              data: {
-                  labels: dates,
-                  datasets: [{
-                      label: 'Weight (kg)',
-                      data: weightValues,
-                      borderColor: 'rgb(54, 162, 235)',
-                      fill: false
-                  }]
-              },
-              options: {
-                  scales: {
-                      x: { display: true, title: { display: true, text: 'Date' } },
-                      y: { display: true, title: { display: true, text: 'Weight (kg)' } }
-                  }
-              }
-          });
-
-          // MAP Chart
-          var ctxMap = document.getElementById('mapChart').getContext('2d');
-          new Chart(ctxMap, {
-              type: 'line',
-              data: {
-                  labels: dates,
-                  datasets: [{
-                      label: 'MAP (mmHg)',
-                      data: mapValues,
-                      borderColor: 'rgb(75, 192, 192)',
-                      fill: false
-                  },
-                  {
-                      label: 'Overall MAP Average',
-                      data: overallMapLine,
-                      borderColor: 'rgb(0, 0, 0)',
-                      borderDash: [10,5],
-                      fill: false
-                  },
-                  {
-                      label: 'National MAP Average',
-                      data: nationalMapLine,
-                      borderColor: 'rgb(255, 0, 0)',
-                      borderDash: [10,5],
-                      fill: false
-                  }]
-              },
-              options: {
-                  scales: {
-                      x: { display: true, title: { display: true, text: 'Date' } },
-                      y: { display: true, title: { display: true, text: 'MAP (mmHg)' } }
-                  }
-              }
-          });
-
-          // Heart Rate Chart
-          var ctxHr = document.getElementById('hrChart').getContext('2d');
-          new Chart(ctxHr, {
-              type: 'line',
-              data: {
-                  labels: dates,
-                  datasets: [{
-                      label: 'User Average HR (bpm)',
-                      data: hrValues,
-                      borderColor: 'rgb(255, 99, 132)',
-                      fill: false
-                  },
-                  {
-                      label: 'Overall HR Average',
-                      data: overallHrLine,
-                      borderColor: 'rgb(0, 0, 0)',
-                      borderDash: [10,5],
-                      fill: false
-                  },
-                  {
-                      label: 'National HR Average',
-                      data: nationalHrLine,
-                      borderColor: 'rgb(0, 123, 255)',
-                      borderDash: [10,5],
-                      fill: false
-                  }]
-              },
-              options: {
-                  scales: {
-                      x: { display: true, title: { display: true, text: 'Date' } },
-                      y: { display: true, title: { display: true, text: 'HR (bpm)' } }
-                  }
-              }
-          });
-
-          // Calories Chart
-          var ctxCal = document.getElementById('caloriesChart').getContext('2d');
-          new Chart(ctxCal, {
-              type: 'line',
-              data: {
-                  labels: dates,
-                  datasets: [{
-                      label: 'Calories Intake',
-                      data: calories,
-                      borderColor: 'rgb(75, 192, 192)',
-                      fill: false
-                  }]
-              },
-              options: {
-                  scales: {
-                      x: { display: true, title: { display: true, text: 'Date' } },
-                      y: { display: true, title: { display: true, text: 'Calories' } }
-                  }
-              }
-          });
-
-          // Activity Chart
-          var ctxAct = document.getElementById('activityChart').getContext('2d');
-          new Chart(ctxAct, {
-              type: 'line',
-              data: {
-                  labels: dates,
-                  datasets: [{
-                      label: 'Physical Activity (minutes)',
-                      data: activity,
-                      borderColor: 'rgb(255, 159, 64)',
-                      fill: false
-                  }]
-              },
-              options: {
-                  scales: {
-                      x: { display: true, title: { display: true, text: 'Date' } },
-                      y: { display: true, title: { display: true, text: 'Minutes' } }
-                  }
-              }
-          });
-        </script>
-      </div>
-      <!-- Feedback Tab -->
-      <div class="tab-pane fade" id="feedback" role="tabpanel">
-        <h3>Personalized Feedback</h3>
-        <p>{{ feedback }}</p>
-      </div>
-      <!-- Edit Entries Tab -->
-      <div class="tab-pane fade" id="edit" role="tabpanel">
-        <h3>Edit Entries</h3>
-        <form method="get" class="form-inline mb-3">
-          <label for="start_date" class="mr-2">Start Date:</label>
-          <input type="date" id="start_date" name="start_date" class="form-control mr-2" value="{{ request.GET.start_date }}">
-          <label for="end_date" class="mr-2">End Date:</label>
-          <input type="date" id="end_date" name="end_date" class="form-control mr-2" value="{{ request.GET.end_date }}">
-          <button type="submit" class="btn btn-primary">Filter</button>
-        </form>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Weight (kg)</th>
-              <th>BP Systolic</th>
-              <th>BP Diastolic</th>
-              <th>HR</th>
-              <th>Calories</th>
-              <th>Activity (min)</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for entry in entries %}
-            <tr>
-              <td>{{ entry.date }}</td>
-              <td>{{ entry.weight }}</td>
-              <td>{{ entry.blood_pressure_systolic }}</td>
-              <td>{{ entry.blood_pressure_diastolic }}</td>
-              <td>{{ entry.heart_rate }}</td>
-              <td>{{ entry.calories_intake }}</td>
-              <td>{{ entry.physical_activity_minutes }}</td>
-              <td>
-                <a class="btn btn-sm btn-secondary" href="{% url 'health_edit_entry' entry.date|date:'Y-m-d' %}">Edit</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+<div class="container mt-4">
+  <h2>Health Dashboard</h2>
+  <!-- Main Navigation Tabs -->
+  <ul class="nav nav-tabs" id="healthTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link" id="data-entry-tab" data-toggle="tab" href="#data-entry" role="tab">Data Entry</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="visualization-tab" data-toggle="tab" href="#visualization" role="tab">Visualizations</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="feedback-tab" data-toggle="tab" href="#feedback" role="tab">Feedback</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab">Edit Entries</a>
+    </li>
+  </ul>
+  <div class="tab-content mt-3" id="healthTabContent">
+    <div class="tab-pane fade" id="data-entry" role="tabpanel">
+      {% include "health/partials/data_entry.html" %}
     </div>
-    <p class="mt-3"><a href="{% url 'dashboard' %}">Return to Main Dashboard</a></p>
+    <div class="tab-pane fade" id="visualization" role="tabpanel">
+      {% include "health/partials/visualizations.html" %}
+    </div>
+    <div class="tab-pane fade" id="feedback" role="tabpanel">
+      {% include "health/partials/feedback.html" %}
+    </div>
+    <div class="tab-pane fade" id="edit" role="tabpanel">
+      {% include "health/partials/edit_entries.html" %}
+    </div>
   </div>
+  <p class="mt-3"><a href="{% url 'dashboard' %}">Return to Main Dashboard</a></p>
+</div>
+<script>
+  $(document).ready(function(){
+    // Debug: log the entire query string
+    console.log("Query String:", window.location.search);
+    var urlParams = new URLSearchParams(window.location.search);
+    var activeTab = urlParams.get('active_tab');
+    console.log("Active Tab from URL:", activeTab);
+    if(activeTab){
+      $('#healthTab a[href="#' + activeTab + '"]').tab('show');
+    } else if(urlParams.get('start_date') || urlParams.get('end_date')){
+      $('#healthTab a[href="#edit"]').tab('show');
+    } else {
+      $('#healthTab a[href="#data-entry"]').tab('show');
+    }
+  });
+</script>
 </body>
 </html>
