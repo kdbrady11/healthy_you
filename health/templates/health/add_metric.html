@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Health Metric</title>
+</head>
+<body>
+    <h2>Add Health Metric</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'view_metrics' %}">View My Metrics</a>
+</body>
+</html>

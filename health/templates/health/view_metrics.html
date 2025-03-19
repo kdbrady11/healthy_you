@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Health Metrics</title>
+</head>
+<body>
+    <h2>My Health Metrics</h2>
+    <table border="1">
+        <tr>
+            <th>Date</th>
+            <th>Weight (kg)</th>
+            <th>Blood Pressure</th>
+            <th>Heart Rate</th>
+            <th>Calories Intake</th>
+            <th>Physical Activity (min)</th>
+        </tr>
+        {% for metric in metrics %}
+        <tr>
+            <td>{{ metric.date }}</td>
+            <td>{{ metric.weight }}</td>
+            <td>
+                {% if metric.blood_pressure_systolic and metric.blood_pressure_diastolic %}
+                    {{ metric.blood_pressure_systolic }}/{{ metric.blood_pressure_diastolic }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td>{{ metric.heart_rate|default:"N/A" }}</td>
+            <td>{{ metric.calories_intake|default:"N/A" }}</td>
+            <td>{{ metric.physical_activity_minutes|default:"N/A" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{% url 'add_metric' %}">Add New Metric</a>
+</body>
+</html>
