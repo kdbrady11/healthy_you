@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Today's Medications</title>
+</head>
+<body>
+    <h2>Medications for {{ today }}</h2>
+    <table border="1">
+        <tr>
+            <th>Medication</th>
+            <th>Dose Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.medication.name }}</td>
+            <td>{{ log.dose_time.scheduled_time }}</td>
+            <td>{{ log.get_status_display }}</td>
+            <td>
+                <form action="{% url 'update_medication_log' log.id %}" method="post">
+                    {% csrf_token %}
+                    <select name="status">
+                        <option value="taken" {% if log.status == 'taken' %}selected{% endif %}>Taken</option>
+                        <option value="not_taken" {% if log.status == 'not_taken' %}selected{% endif %}>Not Taken</option>
+                        <option value="not_recorded" {% if log.status == 'not_recorded' %}selected{% endif %}>Not Recorded</option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p><a href="{% url 'dashboard' %}">Return to Dashboard</a></p>
+</body>
+</html>

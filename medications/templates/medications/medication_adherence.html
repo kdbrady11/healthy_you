@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medication Adherence</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Medication Adherence (Last 30 Days)</h2>
+    <canvas id="adherenceChart" width="400" height="400"></canvas>
+    <script>
+        var ctx = document.getElementById('adherenceChart').getContext('2d');
+        var adherenceChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Taken', 'Not Taken', 'Not Recorded'],
+                datasets: [{
+                    data: [{{ taken_count }}, {{ not_taken_count }}, {{ not_recorded_count }}],
+                    backgroundColor: [
+                        'rgb(75, 192, 192)',
+                        'rgb(255, 99, 132)',
+                        'rgb(201, 203, 207)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: {
+                        display: true,
+                        text: 'Medication Adherence'
+                    }
+                }
+            }
+        });
+    </script>
+    <p><a href="{% url 'dashboard' %}">Return to Dashboard</a></p>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ action }} Medication</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-4">
+    <h2>{{ action }} Medication</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <h3>Dose Times</h3>
+        {{ formset.management_form }}
+        {% for form in formset %}
+          <div class="card mb-2">
+            <div class="card-body">
+              {{ form.as_p }}
+              {% if form.instance.pk %}
+                <div class="form-check">
+                  <label class="form-check-label">
+                    {{ form.DELETE }} Delete this dose time
+                  </label>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">{{ action }}</button>
+    </form>
+    {% if form.errors or formset.non_form_errors %}
+      <div class="alert alert-danger mt-2">
+        Please correct the errors below:
+        <div>{{ form.errors }}</div>
+        <div>{{ formset.non_form_errors }}</div>
+      </div>
+    {% endif %}
+    <p class="mt-3"><a href="{% url 'medications_dashboard' %}">Back to Medications Dashboard</a></p>
+  </div>
+</body>
+</html>

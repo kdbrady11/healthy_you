@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Medications</title>
+</head>
+<body>
+    <h2>Your Medications</h2>
+    <a href="{% url 'medication_create' %}">Create New Medication</a>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Frequency</th>
+            <th>Dosing Schedule</th>
+            <th>Dose Times</th>
+            <th>Actions</th>
+        </tr>
+        {% for med in medications %}
+        <tr>
+            <td>{{ med.name }}</td>
+            <td>{{ med.description }}</td>
+            <td>{{ med.get_frequency_display }}</td>
+            <td>{{ med.dosing_schedule }}</td>
+            <td>
+                {% for dose in med.dose_times.all %}
+                    {{ dose.scheduled_time }}{% if dose.recurring_days %} ({{ dose.recurring_days }}){% endif %}<br>
+                {% empty %}
+                    No dose times set.
+                {% endfor %}
+                <a href="{% url 'add_dose_time' med.id %}">Add Dose Time</a>
+            </td>
+            <td>
+                <a href="{% url 'medication_edit' med.id %}">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p><a href="{% url 'dashboard' %}">Return to Dashboard</a></p>
+</body>
+</html>

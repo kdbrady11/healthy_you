@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Medications Dashboard</title>
+  <!-- Include Bootstrap CSS, jQuery, Bootstrap JS, and Chart.js -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container mt-4">
+    <h2>Medications Dashboard</h2>
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="schedule-tab" data-toggle="tab" href="#schedule" role="tab" aria-controls="schedule" aria-selected="true">Schedule</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="today-tab" data-toggle="tab" href="#today" role="tab" aria-controls="today" aria-selected="false">Today's Medications</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="adherence-tab" data-toggle="tab" href="#adherence" role="tab" aria-controls="adherence" aria-selected="false">Adherence</a>
+      </li>
+    </ul>
+    <!-- Tab Panes -->
+    <div class="tab-content mt-3" id="dashboardTabsContent">
+      <!-- Schedule Tab -->
+      <div class="tab-pane fade show active" id="schedule" role="tabpanel" aria-labelledby="schedule-tab">
+        <h3>Medication Schedule</h3>
+        <a class="btn btn-primary mb-2" href="{% url 'medication_create' %}">Add New Medication</a>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Frequency</th>
+              <th>Dosing Schedule</th>
+              <th>Dose Times</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for med in medications %}
+            <tr>
+              <td>{{ med.name }}</td>
+              <td>{{ med.description }}</td>
+              <td>{{ med.get_frequency_display }}</td>
+              <td>{{ med.dosing_schedule }}</td>
+              <td>
+                {% for dose in med.dose_times.all %}
+                  {{ dose.scheduled_time }}{% if dose.recurring_days %} ({{ dose.recurring_days }}){% endif %}<br>
+                {% empty %}
+                  No dose times set.
+                {% endfor %}
+                <a href="{% url 'add_dose_time' med.id %}">Add Dose Time</a>
+              </td>
+              <td>
+                <a class="btn btn-sm btn-secondary" href="{% url 'medication_edit' med.id %}">Edit</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- Today's Medications Tab -->
+      <div class="tab-pane fade" id="today" role="tabpanel" aria-labelledby="today-tab">
+        <h3>Today's Medications ({{ today }})</h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Medication</th>
+              <th>Dose Time</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in today_logs %}
+            <tr>
+              <td>{{ log.medication.name }}</td>
+              <td>{{ log.dose_time.scheduled_time }}</td>
+              <td>{{ log.get_status_display }}</td>
+              <td>
+                <form method="post" action="{% url 'update_medication_log' log.id %}">
+                  {% csrf_token %}
+                  <select name="status" class="form-control form-control-sm d-inline w-auto">
+                    <option value="taken" {% if log.status == 'taken' %}selected{% endif %}>Taken</option>
+                    <option value="not_taken" {% if log.status == 'not_taken' %}selected{% endif %}>Not Taken</option>
+                    <option value="not_recorded" {% if log.status == 'not_recorded' %}selected{% endif %}>Not Recorded</option>
+                  </select>
+                  <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- Adherence Tab -->
+      <div class="tab-pane fade" id="adherence" role="tabpanel" aria-labelledby="adherence-tab">
+        <h3>Adherence Statistics</h3>
+        <div class="row">
+          <div class="col-md-6">
+            <h4>Today's Adherence</h4>
+            <canvas id="todayChart" width="400" height="400"></canvas>
+          </div>
+          <div class="col-md-6">
+            <h4>Overall Adherence</h4>
+            <canvas id="overallChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+        <script>
+          // Today's Adherence Chart
+          var ctxToday = document.getElementById('todayChart').getContext('2d');
+          var todayChart = new Chart(ctxToday, {
+            type: 'pie',
+            data: {
+              labels: ['Taken', 'Not Taken', 'Not Recorded'],
+              datasets: [{
+                data: [{{ today_taken }}, {{ today_not_taken }}, {{ today_not_recorded }}],
+                backgroundColor: [
+                  'rgb(75, 192, 192)',
+                  'rgb(255, 99, 132)',
+                  'rgb(201, 203, 207)'
+                ]
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: 'top' },
+                title: {
+                  display: true,
+                  text: "Today's Adherence"
+                }
+              }
+            }
+          });
+
+          // Overall Adherence Chart
+          var ctxOverall = document.getElementById('overallChart').getContext('2d');
+          var overallChart = new Chart(ctxOverall, {
+            type: 'pie',
+            data: {
+              labels: ['Taken', 'Not Taken', 'Not Recorded'],
+              datasets: [{
+                data: [{{ overall_taken }}, {{ overall_not_taken }}, {{ overall_not_recorded }}],
+                backgroundColor: [
+                  'rgb(75, 192, 192)',
+                  'rgb(255, 99, 132)',
+                  'rgb(201, 203, 207)'
+                ]
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: 'top' },
+                title: {
+                  display: true,
+                  text: "Overall Adherence"
+                }
+              }
+            }
+          });
+        </script>
+      </div>
+    </div>
+    <p class="mt-3"><a href="{% url 'dashboard' %}">Return to Main Dashboard</a></p>
+  </div>
+<script>
+  // When the page loads, check for the active_tab query parameter
+  $(document).ready(function(){
+      var urlParams = new URLSearchParams(window.location.search);
+      var activeTab = urlParams.get('active_tab');
+      if(activeTab){
+           $('#dashboardTabs a[href="#' + activeTab + '"]').tab('show');
+      }
+  });
+</script>
+</body>
+</html>
