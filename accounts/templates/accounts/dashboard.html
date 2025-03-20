@@ -1,18 +1,102 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-</head>
-<body>
-    <h2>Welcome, {{ request.user.username }}</h2>
-    <ul>
-        <li><a href="{% url 'health_dashboard' %}">Health Metrics</a></li>
-        <li><a href="{% url 'medications_dashboard' %}">Medications</a></li>
-        <li><a href="{% url 'sleep_dashboard' %}">Sleep</a></li>
-        <li><a href="{% url 'goal_dashboard' %}">Goals</a></li>
-        <li><a href="{% url 'appointment_dashboard' %}">Appointments</a></li>
-        <li><a href="{% url 'logout' %}">Logout</a></li>
-    </ul>
-</body>
-</html>
+{% extends "base.html" %}
 
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="text-center">
+    <!-- Welcome Section -->
+    <h2 class="my-4">Welcome, {{ request.user.username }}</h2>
+</div>
+
+<!-- Health Management Section -->
+<div class="mb-5">
+    <h3 class="mb-4 text-primary">Health Management</h3>
+    <div class="row">
+        <!-- Health Metrics Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-heartbeat fa-3x text-danger mb-3"></i>
+                    <h5 class="card-title">Health Metrics</h5>
+                    <p class="card-text">Track and analyze your health data.</p>
+                    <a href="{% url 'health_dashboard' %}" class="btn btn-primary">View Metrics</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medications Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-pills fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Medications</h5>
+                    <p class="card-text">Manage your prescriptions and reminders.</p>
+                    <a href="{% url 'medications_dashboard' %}" class="btn btn-primary">View Medications</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sleep Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-bed fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Sleep</h5>
+                    <p class="card-text">Monitor and improve your sleep patterns.</p>
+                    <a href="{% url 'sleep_dashboard' %}" class="btn btn-primary">Track Sleep</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Planning and Goals Section -->
+<div class="mb-5">
+    <h3 class="mb-4 text-primary">Planning & Goals</h3>
+    <div class="row">
+        <!-- Goals Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-bullseye fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Goals</h5>
+                    <p class="card-text">Set and achieve your personal health goals.</p>
+                    <a href="{% url 'goal_dashboard' %}" class="btn btn-primary">View Goals</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Appointments</h5>
+                    <p class="card-text">Schedule and manage your appointments.</p>
+                    <a href="{% url 'appointment_dashboard' %}" class="btn btn-primary">View Appointments</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reports and Insights Section -->
+<div class="mb-5">
+    <h3 class="mb-4 text-primary">Reports & Insights</h3>
+    <div class="row">
+        <!-- Reports Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-alt fa-3x text-secondary mb-3"></i>
+                    <h5 class="card-title">Reports</h5>
+                    <p class="card-text">Generate and view detailed health reports.</p>
+                    <a href="{% url 'report_dashboard' %}" class="btn btn-primary">View Reports</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

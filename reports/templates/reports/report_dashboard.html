@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Data Trend Analysis & Reports
+{% endblock %}
+
+{% block extra_head %}
+  <!-- Include additional CSS/JS needed for this page -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Data Trend Analysis & Reports (Last 30 Days)</h2>
+  <p>{{ analysis }}</p>
+
+  <!-- Section: Weight Data -->
+  <h3>Weight (lbs)</h3>
+  <canvas id="weightChart" width="800" height="400"></canvas>
+
+  <!-- Section: Calorie Intake Data -->
+  <h3>Calorie Intake</h3>
+  <canvas id="caloriesChart" width="800" height="400"></canvas>
+
+  <!-- Section: Physical Activity Data -->
+  <h3>Physical Activity (minutes)</h3>
+  <canvas id="activityChart" width="800" height="400"></canvas>
+
+  <!-- Section: MAP Data -->
+  <h3>MAP (mmHg)</h3>
+  <canvas id="mapChart" width="800" height="400"></canvas>
+
+  <!-- Section: Heart Rate Data -->
+  <h3>Heart Rate (bpm)</h3>
+  <canvas id="hrChart" width="800" height="400"></canvas>
+
+  <!-- Section: Sleep Duration Data -->
+  <h3>Sleep Duration (hours)</h3>
+  <canvas id="sleepChart" width="800" height="400"></canvas>
+
+  <p class="mt-3">
+    <a href="{% url 'dashboard' %}">Return to Main Dashboard</a>
+  </p>
+</div>
+
+<script>
+  // Function to create a chart
+  function createChart(contextId, label, data, borderColor, xTitle, yTitle) {
+    const ctx = document.getElementById(contextId).getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: {{ hm_dates|safe }}, // Common date labels for all charts
+        datasets: [{
+          label: label,
+          data: data,
+          borderColor: borderColor,
+          fill: false
+        }]
+      },
+      options: {
+        scales: {
+          x: { title: { display: true, text: xTitle } },
+          y: { title: { display: true, text: yTitle } }
+        }
+      }
+    });
+  }
+
+  // Weight Chart
+  createChart(
+    'weightChart',
+    'Average Weight (lbs)',
+    {{ hm_weight_lbs|safe }},
+    'rgb(54, 162, 235)',
+    'Date',
+    'Weight (lbs)'
+  );
+
+  // Calories Chart
+  createChart(
+    'caloriesChart',
+    'Average Calorie Intake',
+    {{ hm_calories|safe }},
+    'rgb(255, 205, 86)',
+    'Date',
+    'Calories'
+  );
+
+  // Physical Activity Chart
+  createChart(
+    'activityChart',
+    'Average Physical Activity (min)',
+    {{ hm_activity|safe }},
+    'rgb(75, 192, 192)',
+    'Date',
+    'Minutes'
+  );
+
+  // MAP Chart
+  createChart(
+    'mapChart',
+    'Average MAP (mmHg)',
+    {{ hm_map|safe }},
+    'rgb(255, 99, 132)',
+    'Date',
+    'MAP (mmHg)'
+  );
+
+  // Heart Rate Chart
+  createChart(
+    'hrChart',
+    'Average Heart Rate (bpm)',
+    {{ hm_hr|safe }},
+    'rgb(153, 102, 255)',
+    'Date',
+    'Heart Rate (bpm)'
+  );
+
+  // Sleep Chart (uses separate data and labels)
+  createChart(
+    'sleepChart',
+    'Total Sleep Duration (hrs)',
+    {{ sl_duration|safe }},
+    'rgb(255, 159, 64)',
+    'Date',
+    'Hours'
+  );
+</script>
+{% endblock %}

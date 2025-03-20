@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Goal Dashboard</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Goal Dashboard{% endblock %}
+
+{% block content %}
 <div class="container mt-4">
+  <!-- Heading -->
   <h2>Your Goals</h2>
+
+  <!-- Button to create a new goal -->
   <a href="{% url 'goal_create' %}" class="btn btn-primary mb-3">Create New Goal</a>
-  <table class="table table-bordered">
-    <thead>
+
+  <!-- Goals Table -->
+  <table class="table table-bordered table-hover">
+    <thead class="thead-light">
       <tr>
         <th>Goal Type</th>
         <th>Description</th>
@@ -24,9 +27,16 @@
     <tbody>
       {% for item in goal_data %}
       <tr>
+        <!-- Goal Type -->
         <td>{{ item.goal.get_goal_type_display }}</td>
+
+        <!-- Goal Description -->
         <td>{{ item.goal.description }}</td>
+
+        <!-- Target Value -->
         <td>{{ item.goal.target_value }}</td>
+
+        <!-- Current Value -->
         <td>
           {% if item.current_value %}
             {{ item.current_value }}
@@ -34,31 +44,47 @@
             N/A
           {% endif %}
         </td>
+
+        <!-- Progress -->
         <td>
-  {% if item.progress is not None %}
-    <div class="progress" style="height: 20px;">
-      <div class="progress-bar" role="progressbar" style="width: {{ item.progress }}%;" aria-valuenow="{{ item.progress }}" aria-valuemin="0" aria-valuemax="100">
-        {{ item.progress }}%
-      </div>
-    </div>
-  {% else %}
-    N/A
-  {% endif %}
-</td>
+          {% if item.progress is not None %}
+            <div class="d-flex align-items-center">
+              <div class="progress" style="height: 20px; flex-grow: 1; margin-right: 10px;">
+                <div
+                  class="progress-bar bg-success"
+                  role="progressbar"
+                  style="width: {{ item.progress }}%;"  <!-- Inline style for dynamic progress -->
+                </div>
+              </div>
+              <span>{{ item.progress }}%</span>
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+
+        <!-- Feedback -->
         <td>{{ item.feedback }}</td>
-        <td>{{ item.goal.due_date }}</td>
+
+        <!-- Due Date -->
+        <td>{{ item.goal.due_date|date:"M d, Y" }}</td>  <!-- Proper date formatting -->
+
+        <!-- Actions -->
         <td>
           <a href="{% url 'goal_edit' item.goal.id %}" class="btn btn-sm btn-secondary">Edit</a>
         </td>
       </tr>
       {% empty %}
+      <!-- Display when no goals are available -->
       <tr>
-        <td colspan="8">No goals set yet.</td>
+        <td colspan="8" class="text-center">No goals set yet.</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-  <p><a href="{% url 'dashboard' %}">Return to Main Dashboard</a></p>
+
+  <!-- Back to main dashboard link -->
+  <p>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Return to Main Dashboard</a>
+  </p>
 </div>
-</body>
-</html>
+{% endblock %}

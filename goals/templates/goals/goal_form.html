@@ -1,18 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>{{ action }} Goal</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Goal{% endblock %}
+
+{% block content %}
+<!-- Main container -->
 <div class="container mt-4">
+
+  <!-- Header -->
   <h2>{{ action }} Goal</h2>
+
+  <!-- Goal form -->
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form.as_p }}  <!-- Render form fields with Django's as_p for clean formatting -->
     <button type="submit" class="btn btn-primary">{{ action }}</button>
   </form>
-  <p><a href="{% url 'goal_dashboard' %}">Back to Goals Dashboard</a></p>
+
+  <!-- Back button -->
+  <p>
+    <a href="{% url 'goal_dashboard' %}" class="btn btn-secondary mt-3">Back to Goals Dashboard</a>
+  </p>
 </div>
-</body>
-</html>
+{% endblock %}

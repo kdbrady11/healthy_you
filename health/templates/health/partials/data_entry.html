@@ -1,6 +1,9 @@
 <h3>Enter Health Metrics</h3>
+
+<!-- Form for entering health metrics -->
 <form method="post">
   {% csrf_token %}
+
   <!-- Weight Field with Dynamic Unit Label -->
   <div class="form-group">
     <label for="id_weight">
@@ -8,13 +11,14 @@
     </label>
     {{ form.weight }}
   </div>
-  <!-- Weight Unit Field -->
+
+  <!-- Weight Unit Dropdown Field -->
   <div class="form-group">
     <label for="id_weight_unit">Weight Unit</label>
     {{ form.weight_unit }}
   </div>
 
-  <!-- Render remaining fields -->
+  <!-- Render all remaining fields dynamically (except weight and weight_unit) -->
   {% for field in form %}
     {% if field.name not in "weight weight_unit" %}
       <div class="form-group">
@@ -23,17 +27,18 @@
     {% endif %}
   {% endfor %}
 
+  <!-- Submit Button -->
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-<!-- Include jQuery (if not already included) and update the unit label -->
+<!-- Include jQuery for dynamic updates (if not already included on the page) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  $(document).ready(function(){
-    // Update the weight unit label when the weight_unit field changes.
-    $('#id_weight_unit').change(function(){
-       var selected = $(this).val();
-       $('#weightUnitLabel').text(selected);
+  $(document).ready(function () {
+    // Update the weight unit label dynamically when the weight_unit dropdown value changes
+    $('#id_weight_unit').change(function () {
+      var selected = $(this).val(); // Get the selected unit
+      $('#weightUnitLabel').text(selected); // Update the label text
     });
   });
 </script>
