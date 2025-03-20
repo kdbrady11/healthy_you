@@ -35,12 +35,16 @@
           {% endif %}
         </td>
         <td>
-          {% if item.progress is not None %}
-            {{ item.progress }}%
-          {% else %}
-            N/A
-          {% endif %}
-        </td>
+  {% if item.progress is not None %}
+    <div class="progress" style="height: 20px;">
+      <div class="progress-bar" role="progressbar" style="width: {{ item.progress }}%;" aria-valuenow="{{ item.progress }}" aria-valuemin="0" aria-valuemax="100">
+        {{ item.progress }}%
+      </div>
+    </div>
+  {% else %}
+    N/A
+  {% endif %}
+</td>
         <td>{{ item.feedback }}</td>
         <td>{{ item.goal.due_date }}</td>
         <td>
