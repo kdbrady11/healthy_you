@@ -164,3 +164,8 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Email debugging
 DEFAULT_FROM_EMAIL = 'noreply@healthyyou.com'  # Default "from" email address
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://healthy-you-0ip9.onrender.com"
+]
+
