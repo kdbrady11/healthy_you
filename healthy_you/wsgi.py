@@ -16,3 +16,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'healthy_you.settings')
 
 # Get the WSGI application callable
 application = get_wsgi_application()
+
+
+# Run deployment init on startup
+try:
+    from django.core.management import call_command
+    call_command('init_deploy')
+except Exception as e:
+    print(f"Init deploy script failed: {e}")
