@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/stable/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Base directory path for the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,14 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security settings
 # ----------------------------------------------------------------------
 
-# WARNING: Keep the secret key secret in production! Do not hardcode it.
-SECRET_KEY = 'django-insecure-7!y1=iov+8%5%mx!v*ol#cjmk=r+-c(v@f6aqc1&p*7cz1awre'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+DEBUG = os.getenv("DJANGO_DEBUG", "False") == "True"
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 
-# Do not run with debug enabled in production environments.
-DEBUG = True
-
-# Defines allowed hosts when deploying the application.
-ALLOWED_HOSTS = []
 
 # ----------------------------------------------------------------------
 # Application definition
@@ -136,10 +137,12 @@ USE_TZ = True  # Enable timezone support
 # Static files
 # ----------------------------------------------------------------------
 
-STATIC_URL = 'static/'  # URL path for serving static files
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Custom static files directory
-]
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # ----------------------------------------------------------------------
 # Default primary key field type

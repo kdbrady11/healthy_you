@@ -36,6 +36,12 @@ def medications_dashboard(request):
                 defaults={'status': 'not_recorded'}
             )
             today_logs.append(log)
+            # Create user-friendly reminder message
+            if log.status == 'not_recorded':
+                reminder_msg = f"💊 Reminder: Take {med.name} at {dose.scheduled_time.strftime('%I:%M %p')}."
+                if 'reminders' not in locals():
+                    reminders = []
+                reminders.append(reminder_msg)
 
     # Compute adherence statistics for today
     today_taken = sum(1 for log in today_logs if log.status == 'taken')
@@ -59,6 +65,7 @@ def medications_dashboard(request):
         'overall_taken': overall_taken,
         'overall_not_taken': overall_not_taken,
         'overall_not_recorded': overall_not_recorded,
+        'reminders': reminders if 'reminders' in locals() else [],
     }
 
     return render(request, 'medications/medications_dashboard.html', context)

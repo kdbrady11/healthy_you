@@ -4,6 +4,18 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+# View for Homepage
+def homepage(request):
+    """Homepage view that acts as a central hub for the project."""
+    context = {
+        "project_title": "Healthy You",
+        "project_description": (
+            "Healthy You is a powerful platform designed to help users stay on top of their health "
+            "by tracking their medications, setting reminders, monitoring health metrics, and achieving "
+            "their wellness goals. Simplify your health management with one intuitive interface."
+        )
+    }
+    return render(request, "accounts/homepage.html", context)
 
 # View for user registration
 def register(request):

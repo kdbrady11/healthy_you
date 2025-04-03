@@ -15,6 +15,19 @@
 <div class="container mt-4">
     <!-- Page Header -->
     <h2>Medications Dashboard</h2>
+{% if reminders %}
+  <div class="reminders">
+    <h3>Today's Medication Reminders</h3>
+    <ul>
+      {% for msg in reminders %}
+        <li>{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% else %}
+  <p>No reminders for today. You're all set!</p>
+{% endif %}
+
 
     <!-- Navigation Tabs -->
     <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">

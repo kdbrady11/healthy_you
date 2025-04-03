@@ -33,7 +33,12 @@ def health_dashboard(request):
     )
 
     # Aggregate metrics by date for the current user
-    aggregated = HealthMetric.objects.filter(user=request.user).values('date').annotate(
+    aggregated = HealthMetric.objects.filter(
+        user=request.user,
+        calories_intake__isnull=False,  # Avoid None values
+        physical_activity_minutes__isnull=False,
+        heart_rate__isnull=False,  # Add similar filters if needed
+    ).values('date').annotate(
         avg_weight=Avg('weight'),
         sum_calories=Sum('calories_intake'),
         sum_activity=Sum('physical_activity_minutes'),
@@ -53,10 +58,19 @@ def health_dashboard(request):
     # Calculate overall averages for statistics display
     overall_weight = (sum([w for w in agg_weight_lbs if w is not None]) /
                       len([w for w in agg_weight_lbs if w is not None])) if agg_weight_lbs else 0
-    overall_calories = sum(agg_calories) / len(agg_calories) if agg_calories else 0
-    overall_activity = sum(agg_activity) / len(agg_activity) if agg_activity else 0
-    overall_map = sum(agg_map) / len(agg_map) if agg_map else 0
-    overall_hr = sum(agg_hr) / len(agg_hr) if agg_hr else 0
+    # Filter out None values
+    filtered_calories = [cal for cal in agg_calories if cal is not None]
+
+    # Calculate sum and average
+    overall_calories = sum(filtered_calories) / len(filtered_calories) if filtered_calories else 0
+    filtered_activity = [act for act in agg_activity if act is not None]
+    overall_activity = sum(filtered_activity) / len(filtered_activity) if filtered_activity else 0
+
+    filtered_map = [map_val for map_val in agg_map if map_val is not None]
+    overall_map = sum(filtered_map) / len(filtered_map) if filtered_map else 0
+
+    filtered_hr = [hr for hr in agg_hr if hr is not None]
+    overall_hr = sum(filtered_hr) / len(filtered_hr) if filtered_hr else 0
 
     # Constants for comparison
     NATIONAL_AVG_HR = 70
